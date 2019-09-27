@@ -41,6 +41,9 @@ class field:
             cardsTupple.append(objet[i].getTupple())
         return cardsTupple
 
+    def show(self):
+        pass
+
 class openField(field):
     def __init__(self,cards):
         field.__init__(self,cards)
@@ -178,13 +181,13 @@ class table:
         self.player2.addToCloseField(self.deck.drawX(self.fieldsLen))
 
 
-    def printPlayerHand(self):
-        str=""
-        hand=self.player1.getHand()
-        cards=hand.getCards()
-        for i in range(hand.fieldLen()):
-            str+="["+ cards[i].getChar() +"]"
-        print(str)
+
+    def show(self):
+        self.player2.printHand()
+        self.printTable()
+        self.player1.printHand()
+
+
 
 
     def printTable(self):
@@ -199,12 +202,7 @@ class table:
 
 
 
-    def printOponentHand(self):
-        str=""
-        hand = self.player2.getHand()
-        for i in range(hand.fieldLen()):
-            str+="[*]"
-        print(str)
+
 
     def printOponentCloseField(self):
         str = ""
@@ -238,20 +236,13 @@ class table:
 
 
 
+
+
 class player:
     def __init__(self,hand,openField,closeField):
         self.hand=hand
         self.openField=openField
         self.closeField=closeField
-
-    def playFromHand(self,x,y=-1):
-        return self.hand.playCards(x,y)
-
-    def playFromOpenField(self,x,y=-1):
-        return self.openField.playCards(x,y)
-
-    def playFromCloseField(self,x):
-        return self.closeField.playCards(x)
 
 
     def addTohand(self,newCards):
@@ -269,3 +260,39 @@ class player:
         return self.openField
     def getCloseField(self):
         return self.closeField
+
+
+
+class IAPlayer(player):
+    def __init__(self,hand,openField,closeField):
+        player.__init__(self,hand,openField,closeField)
+
+    def printHand(self):
+        str=""
+        hand = self.getHand()
+        for i in range(hand.fieldLen()):
+            str+="[*]"
+        print(str)
+
+
+
+class realPlayer(player):
+    def __init__(self,hand,openField,closeField):
+        player.__init__(self,hand,openField,closeField)
+
+    def printHand(self):
+        str=""
+        hand=self.getHand()
+        cards=hand.getCards()
+        for i in range(hand.fieldLen()):
+            str+="["+ cards[i].getChar() +"]"
+        print(str)
+
+    def playFromHand(self,x,y=-1):
+        return self.hand.playCards(x,y)
+
+    def playFromOpenField(self,x,y=-1):
+        return self.openField.playCards(x,y)
+
+    def playFromCloseField(self,x):
+        return self.closeField.playCards(x)

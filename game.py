@@ -4,7 +4,7 @@ class gameIA:
     def __init__(self,IA,deck,handLen,fieldsLen,dump):
 
 
-        self.player1=player(hand([]),openField([]),closeField([]))
+        self.player1=realPlayer(hand([]),openField([]),closeField([]))
         self.player2=IA
         self.table = table(deck, handLen, fieldsLen,self.player1,self.player2)
         self.keepPlaying=True
@@ -12,9 +12,7 @@ class gameIA:
 
 
     def printGame(self):
-        self.table.printOponentHand()
-        self.table.printTable()
-        self.table.printPlayerHand()
+        self.table.show()
 
 
     def endGame(self):
@@ -63,7 +61,7 @@ numlines is an optional argument used only as a fall-back.
     # Fallback for other operating systems.
     print('\n' * numlines)
 
-player2=player(hand([]),openField([]),closeField([]))
+player2=IAPlayer(hand([]),openField([]),closeField([]))
 deck=deck([card('2',2,2),card('2',2,2),card('2',2,2),card('2',2,2),card('3',3,3),card('3',3,3),card('7',7,7),card('7',7,7),card('7',7,7),card('7',7,7),card('10',10,10),card('10',10,10),card('10',10,10),card('10',10,10),card('11',11,11),card('11',11,11),card('11',11,11),card('11',11,11),card('13',13,13),card('13',13,13),card('13',13,13),card('13',13,13),card('14',14,14),card('14',14,14)])
 gameIA=gameIA(player2,deck,4,4,dumpster())
 gameIA.start()
