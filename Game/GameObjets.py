@@ -157,11 +157,85 @@ class deck:
 
 
 class table:
-    def __init__(self,deck,handLen,fieldsLen):
+    def __init__(self,deck,handLen,fieldsLen,player1,player2):
         self.deck=deck
         self.handLen=handLen
         self.fieldsLen=fieldsLen
         self.dump=dumpster()
+        self.player1=player1
+        self.player2=player2
+
+
+    def repartirCartas(self):
+
+        self.deck.shuffleDeck()
+        self.player1.addTohand(self.deck.drawX(self.handLen))
+        self.player1.addToOpenField(self.deck.drawX(self.fieldsLen))
+        self.player1.addToCloseField(self.deck.drawX(self.fieldsLen))
+
+        self.player2.addTohand(self.deck.drawX(self.handLen))
+        self.player2.addToOpenField(self.deck.drawX(self.fieldsLen))
+        self.player2.addToCloseField(self.deck.drawX(self.fieldsLen))
+
+
+    def printPlayerHand(self):
+        str=""
+        hand=self.player1.getHand()
+        cards=hand.getCards()
+        for i in range(hand.fieldLen()):
+            str+="["+ cards[i].getChar() +"]"
+        print(str)
+
+
+    def printTable(self):
+        print("-----------------------")
+        self.printOponentCloseField()
+        self.printOponentOpenField()
+        self.dump.show()
+        self.printPlayerOpenField()
+        self.printPlayerCloseField()
+
+        print("-----------------------")
+
+
+
+    def printOponentHand(self):
+        str=""
+        hand = self.player2.getHand()
+        for i in range(hand.fieldLen()):
+            str+="[*]"
+        print(str)
+
+    def printOponentCloseField(self):
+        str = ""
+        closeField = self.player2.getCloseField()
+        for i in range(closeField.fieldLen()):
+            str += "[*]"
+        print(str)
+
+    def printOponentOpenField(self):
+        str = ""
+        openField = self.player2.getOpenField()
+        cards = openField.getCards()
+        for i in range(openField.fieldLen()):
+            str += "[" + cards[i].getChar() + "]"
+        print(str)
+
+    def printPlayerOpenField(self):
+        str = ""
+        openField = self.player1.getOpenField()
+        cards = openField.getCards()
+        for i in range(openField.fieldLen()):
+            str += "[" + cards[i].getChar() + "]"
+        print(str)
+
+    def printPlayerCloseField(self):
+        str = ""
+        closeField = self.player1.getCloseField()
+        for i in range(closeField.fieldLen()):
+            str += "[*]"
+        print(str)
+
 
 
 class player:

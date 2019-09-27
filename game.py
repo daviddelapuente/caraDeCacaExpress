@@ -2,88 +2,20 @@ from Game.GameObjets import *
 import os
 class gameIA:
     def __init__(self,IA,deck,handLen,fieldsLen,dump):
+
+
         self.player1=player(hand([]),openField([]),closeField([]))
         self.player2=IA
-        self.deck=deck
-        self.handLen=handLen
-        self.fieldsLen=fieldsLen
+        self.table = table(deck, handLen, fieldsLen,self.player1,self.player2)
         self.keepPlaying=True
-        self.dump=dump
 
-
-
-    def repartirCartas(self):
-
-        self.deck.shuffleDeck()
-        self.player1.addTohand(deck.drawX(self.handLen))
-        self.player1.addToOpenField(deck.drawX(self.fieldsLen))
-        self.player1.addToCloseField(deck.drawX(self.fieldsLen))
-
-        self.player2.addTohand(deck.drawX(self.handLen))
-        self.player2.addToOpenField(deck.drawX(self.fieldsLen))
-        self.player2.addToCloseField(deck.drawX(self.fieldsLen))
 
 
     def printGame(self):
-        self.printOponentHand()
-        self.printTable()
-        self.printYourHand()
+        self.table.printOponentHand()
+        self.table.printTable()
+        self.table.printPlayerHand()
 
-    def printYourHand(self):
-        str=""
-        hand=self.player1.getHand()
-        cards=hand.getCards()
-        for i in range(hand.fieldLen()):
-            str+="["+ cards[i].getChar() +"]"
-        print(str)
-
-    def printTable(self):
-        print("-----------------------")
-        self.printOponentCloseField()
-        self.printOponentOpenField()
-        self.dump.show()
-        self.printYourOpenField()
-        self.printYoutCloseField()
-
-        print("-----------------------")
-
-    def printOponentHand(self):
-        str=""
-        hand = self.player2.getHand()
-        for i in range(hand.fieldLen()):
-            str+="[*]"
-        print(str)
-
-
-    def printOponentCloseField(self):
-        str=""
-        closeField=self.player2.getCloseField()
-        for i in range(closeField.fieldLen()):
-            str+="[*]"
-        print(str)
-
-    def printOponentOpenField(self):
-        str=""
-        openField=self.player2.getOpenField()
-        cards = openField.getCards()
-        for i in range(openField.fieldLen()):
-            str+="["+cards[i].getChar()+"]"
-        print(str)
-
-    def printYourOpenField(self):
-        str=""
-        openField=self.player1.getOpenField()
-        cards = openField.getCards()
-        for i in range(openField.fieldLen()):
-            str+="["+cards[i].getChar()+"]"
-        print(str)
-
-    def printYoutCloseField(self):
-        str=""
-        closeField=self.player1.getCloseField()
-        for i in range(closeField.fieldLen()):
-            str+="[*]"
-        print(str)
 
     def endGame(self):
         print("fin del juego")
@@ -99,7 +31,7 @@ class gameIA:
 
     def start(self):
         print("repartiendo cartas")
-        self.repartirCartas()
+        self.table.repartirCartas()
 
         self.printGame()
         jugada = input("tu jugada: ")
