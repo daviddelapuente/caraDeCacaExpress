@@ -33,7 +33,7 @@ class gameIA:
         str=""
         hand=self.player1.getHand()
         cards=hand.getCards()
-        for i in range(hand.handLen()):
+        for i in range(hand.fieldLen()):
             str+="["+ cards[i].getChar() +"]"
         print(str)
 
@@ -50,7 +50,7 @@ class gameIA:
     def printOponentHand(self):
         str=""
         hand = self.player2.getHand()
-        for i in range(hand.handLen()):
+        for i in range(hand.fieldLen()):
             str+="[*]"
         print(str)
 

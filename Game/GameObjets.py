@@ -1,29 +1,92 @@
 import random
 
-class dumpster:
-    def __init__(self):
-        self.dump=[]
 
-    def addToDump(self,newCards):
-        self.dump += newCards
 
-    def burn(self):
-        self.dump=[]
 
-    def dumpLen(self):
-        return len(self.dump)
+class field:
+    def __init__(self,cards):
+        self.cards=cards
 
-    def getDump(self):
+    def fieldLen(self):
+        return len(self.cards)
+
+    def sortField(self):
+        auxField = []
+
+        while (len(self.cards) > 0):
+            maxI = 0
+            for i in range(self.fieldLen()):
+                if self.cards[i].getValue() >= self.cards[maxI].getValue():
+                    maxI = i
+
+            auxField.append(self.cards.pop(maxI))
+        self.cards = auxField
+
+    def getCards(self):
         cards=[]
         for i in range(len(self.cards)):
             cards.append(self.cards[i])
         return cards
 
-    def cardsToTupple(self, objet):
-        cardsTupple = []
+    def shuffleField(self):
+        random.shuffle(self.cards)
+
+    def addCards(self,newCards):
+        self.cards+=newCards
+        self.sortField()
+
+    def cardsToTupple(self,objet):
+        cardsTupple=[]
         for i in range(len(objet)):
             cardsTupple.append(objet[i].getTupple())
         return cardsTupple
+
+class openField(field):
+    def __init__(self,cards):
+        field.__init__(self,cards)
+
+    def playCards(self,x,y=-1):
+        cardsPlayed=[]
+        if y==-1:
+            cardsPlayed.append(self.cards.pop(x))
+            return cardsPlayed
+        else:
+            for i in range(y-x+1):
+                cardsPlayed.append(self.cards.pop(x))
+            return cardsPlayed
+
+
+class  closeField(field):
+    def __init__(self, cards):
+        field.__init__(self,cards)
+
+    def playCards(self, x):
+        cardsPlayed = []
+
+        cardsPlayed.append(self.cards.pop(x))
+        return cardsPlayed
+
+
+class hand(field):
+    def __init__(self,cards):
+        field.__init__(self,cards)
+
+    def playCards(self,x,y=-1):
+        cardsPlayed=[]
+        if y==-1:
+            cardsPlayed.append(self.cards.pop(x))
+            return cardsPlayed
+        else:
+            for i in range(y-x+1):
+                cardsPlayed.append(self.cards.pop(x))
+            return cardsPlayed
+
+class dumpster(field):
+    def __init__(self):
+        field.__init__(self,[])
+
+    def burn(self):
+        self.dump=[]
 
     def draw(self):
         aux=self.dump
@@ -31,9 +94,9 @@ class dumpster:
         return aux
 
     def show(self):
-        if self.dumpLen()==0:
+        if self.fieldLen()==0:
             print("[ ]")
-        elif self.dumpLen()<=4:
+        elif self.fieldLen()<=4:
             print(self.showFirsts())
         else:
             print("[ ] "+self.showFirsts())
@@ -41,8 +104,8 @@ class dumpster:
     def showFirsts(self):
         str=""
 
-        for i in range(min(4,self.dumpLen())):
-            str+="["+ self.dump[(self.dumpLen()-1-i)].getChar() +"] "
+        for i in range(min(4,self.fieldLen())):
+            str+="["+ self.dump[(self.fieldLen()-1-i)].getChar() +"] "
         return str
 
 class card:
@@ -91,149 +154,14 @@ class deck:
         return cardsTupple
 
 
-class hand:
-    def __init__(self,cards):
-        self.cards=cards
-
-    def handLen(self):
-        return len(self.cards)
-
-    def sortHand(self):
-        auxHand=[]
-
-        while (len(self.cards)>0):
-            maxI=0
-            for i in range(self.handLen()):
-                if self.cards[i].getValue()>=self.cards[maxI].getValue():
-                    maxI=i
-
-            auxHand.append(self.cards.pop(maxI))
-        self.cards=auxHand
-
-    def getCards(self):
-        cards=[]
-        for i in range(len(self.cards)):
-            cards.append(self.cards[i])
-        return cards
-
-    def shuffleHand(self):
-        random.shuffle(self.cards)
-
-    def addCards(self,newCards):
-        self.cards+=newCards
-        self.sortHand()
-
-    def playCards(self,x,y=-1):
-        cardsPlayed=[]
-        if y==-1:
-            cardsPlayed.append(self.cards.pop(x))
-            return cardsPlayed
-        else:
-            for i in range(y-x+1):
-                cardsPlayed.append(self.cards.pop(x))
-            return cardsPlayed
-
-    def cardsToTupple(self,objet):
-        cardsTupple=[]
-        for i in range(len(objet)):
-            cardsTupple.append(objet[i].getTupple())
-        return cardsTupple
 
 
-class openField:
-    def __init__(self,cards):
-        self.cards=cards
-
-
-
-    def fieldLen(self):
-        return len(self.cards)
-
-    def sortOpenField(self):
-        auxHand=[]
-
-        while (len(self.cards)>0):
-            maxI=0
-            for i in range(self.fieldLen()):
-                if self.cards[i].getValue()>=self.cards[maxI].getValue():
-                    maxI=i
-
-            auxHand.append(self.cards.pop(maxI))
-        self.cards=auxHand
-
-    def getCards(self):
-        cards=[]
-        for i in range(len(self.cards)):
-            cards.append(self.cards[i])
-        return cards
-
-    def shuffleOpenField(self):
-        random.shuffle(self.cards)
-
-    def addCards(self,newCards):
-        self.cards+=newCards
-        self.sortOpenField()
-
-    def playCards(self,x,y=-1):
-        cardsPlayed=[]
-        if y==-1:
-            cardsPlayed.append(self.cards.pop(x))
-            return cardsPlayed
-        else:
-            for i in range(y-x+1):
-                cardsPlayed.append(self.cards.pop(x))
-            return cardsPlayed
-
-    def cardsToTupple(self,objet):
-        cardsTupple=[]
-        for i in range(len(objet)):
-            cardsTupple.append(objet[i].getTupple())
-        return cardsTupple
-
-
-class  closeField:
-    def __init__(self, cards):
-        self.cards = cards
-
-    def fieldLen(self):
-        return len(self.cards)
-
-    def sortCloseField(self):
-        auxHand = []
-
-        while (len(self.cards) > 0):
-            maxI = 0
-            for i in range(self.fieldLen()):
-                if self.cards[i].getValue() >= self.cards[maxI].getValue():
-                    maxI = i
-
-            auxHand.append(self.cards.pop(maxI))
-        self.cards = auxHand
-
-    def getCards(self):
-        cards = []
-        for i in range(len(self.cards)):
-            cards.append(self.cards[i])
-        return cards
-
-    def shuffleOpenField(self):
-        random.shuffle(self.cards)
-
-    def addCards(self, newCards):
-        self.cards += newCards
-        self.sortCloseField()
-
-    def playCards(self, x):
-        cardsPlayed = []
-
-        cardsPlayed.append(self.cards.pop(x))
-        return cardsPlayed
-
-    def cardsToTupple(self, objet):
-        cardsTupple = []
-        for i in range(len(objet)):
-            cardsTupple.append(objet[i].getTupple())
-        return cardsTupple
+class table:
+    def __init__(self,deck,handLen,fieldsLen):
+        self.deck=deck
+        self.handLen=handLen
+        self.fieldsLen=fieldsLen
+        self.dump=dumpster()
 
 
 class player:
