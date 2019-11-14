@@ -8,6 +8,7 @@ class gameIA:
         self.player2=IA
         self.table = table(deck, handLen, fieldsLen,self.player1,self.player2)
         self.keepPlaying=True
+        self.gameState=gameState(dump)
 
 
 
@@ -19,13 +20,19 @@ class gameIA:
         print("fin del juego")
 
 
-    def play(self,jugada):
+    def player1Play(self,jugada):
         jugadas = jugada.split("-")
         if len(jugadas)>1:
-            self.player1.playFromHand(int(jugadas[0]),int(jugadas[1]))
+            cardsPlayed=self.player1.playFromHand(int(jugadas[0]),int(jugadas[1]))
         else:
-            self.player1.playFromHand(int(jugada))
-
+            cardPlayed=self.player1.playFromHand(int(jugada))
+            newDump=self.table.dump.pushCards(cardPlayed)
+            self.gameState.refreshDumpster(newDump)
+            
+    
+    #aqui es donde juega el player2
+    def player2Play(self):
+        self.player2.playFromHand(self.gameState)
 
     def start(self):
         print("repartiendo cartas")
@@ -35,7 +42,8 @@ class gameIA:
         jugada = input("tu jugada: ")
         while(self.keepPlaying):
             clearscreen()
-            self.play(jugada)
+            self.player1Play(jugada)
+            self.player2Play()
             self.printGame()
             jugada=input("tu jugada: ")
             if jugada=="exit":
@@ -61,7 +69,7 @@ numlines is an optional argument used only as a fall-back.
     # Fallback for other operating systems.
     print('\n' * numlines)
 
-player2=IAPlayer(hand([]),openField([]),closeField([]))
+player2=randomPlayer(hand([]),openField([]),closeField([]))
 deck=deck([card('2',2,2),card('2',2,2),card('2',2,2),card('2',2,2),card('3',3,3),card('3',3,3),card('7',7,7),card('7',7,7),card('7',7,7),card('7',7,7),card('10',10,10),card('10',10,10),card('10',10,10),card('10',10,10),card('11',11,11),card('11',11,11),card('11',11,11),card('11',11,11),card('13',13,13),card('13',13,13),card('13',13,13),card('13',13,13),card('14',14,14),card('14',14,14)])
 gameIA=gameIA(player2,deck,4,4,dumpster())
 gameIA.start()

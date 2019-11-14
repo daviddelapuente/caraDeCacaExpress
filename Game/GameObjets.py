@@ -106,10 +106,16 @@ class dumpster(field):
 
     def showFirsts(self):
         str=""
-
         for i in range(min(4,self.fieldLen())):
-            str+="["+ self.dump[(self.fieldLen()-1-i)].getChar() +"] "
+            str="["+ self.cards[(self.fieldLen()-1-i)].getChar() +"] "+str
         return str
+
+    #push a group of cards in the top of the dumpster
+    def pushCards(self,newCards):
+        self.cards+=newCards
+        return self
+
+    
 
 class card:
     def __init__(self,char,value,virtual_value):
@@ -263,11 +269,12 @@ class player:
 
 
 
+
 class IAPlayer(player):
     def __init__(self,hand,openField,closeField):
         player.__init__(self,hand,openField,closeField)
 
-    def printHand(self):
+    def printHandReverse(self):
         str=""
         hand = self.getHand()
         for i in range(hand.fieldLen()):
@@ -275,6 +282,40 @@ class IAPlayer(player):
         print(str)
 
 
+    def printHand(self):
+        str=""
+        hand=self.getHand()
+        cards=hand.getCards()
+        for i in range(hand.fieldLen()):
+            str+="["+ cards[i].getChar() +"]"
+        print(str)
+
+#this player will play a random cards from de subset of playable cards in the hand
+
+class gameState():
+    def __init__(self,dump):
+        self.dump=dump
+    def getDumpster(self):
+        return self.dump
+    def refreshDumpster(self,newDump):
+        self.dump=newDump
+
+class randomPlayer(IAPlayer):
+    def __init__(self,hand,openField,closeField):
+        player.__init__(self,hand,openField,closeField)
+
+
+    def playFromHand(self,gs):
+        if(gs.getDumpster().fieldLen()==0):
+            print("juega al azar desde 0")
+        else:
+            print("hay mas de 0 cartas")
+
+    def playFromOpenField(self,x,y=-1):
+        print("not implemented")
+
+    def playFromCloseField(self,x):
+        print("not implemented")
 
 class realPlayer(player):
     def __init__(self,hand,openField,closeField):
