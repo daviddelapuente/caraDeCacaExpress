@@ -24,7 +24,7 @@ class gameIA:
 
     def player1Play(self,jugada):
         if jugada=="draw":
-            print("player 1 draw the dumpster")
+           
             self.player1.hand.addCards(self.table.dump.draw())
             self.gameState.refreshDumpster(self.table.dump)
         elif len(self.player1.hand.cards)>0:
@@ -57,7 +57,7 @@ class gameIA:
             #jugada es un string
             jugada=self.player2.think(self.gameState)
             if jugada=="out":
-                print("player 2 draw the dumpster")
+                
                 self.player2.hand.addCards(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
             else:             
@@ -72,7 +72,7 @@ class gameIA:
             #jugar con openField
             jugada=self.player2.thinkOpenField(self.gameState)
             if jugada=="out":
-                print("player 2 draw the dumpster")
+                
                 self.player2.hand.addCards(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
             else:
@@ -88,7 +88,7 @@ class gameIA:
             #jugar con closeField
             jugada=self.player2.thinkCloseField(self.gameState)
             if jugada=="out":
-                print("player 2 draw the dumpster")
+                
                 self.player2.hand.addCards(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
             else:
