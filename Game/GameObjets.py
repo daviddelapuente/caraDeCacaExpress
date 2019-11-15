@@ -311,7 +311,7 @@ class IAPlayer(player):
     def __init__(self,hand,openField,closeField):
         player.__init__(self,hand,openField,closeField)
 
-    def printHand(self):
+    def printHandReverse(self):
         str=""
         hand = self.getHand()
         for i in range(hand.fieldLen()):
@@ -319,7 +319,7 @@ class IAPlayer(player):
         print(str)
 
     
-    def printHandasd(self):
+    def printHand(self):
         str=""
         hand=self.getHand()
         cards=hand.getCards()
@@ -375,8 +375,9 @@ class randomPlayer(IAPlayer):
             #decide que se las quiere llevar
             return "out"
         else:
+            #esto podria ser mas inteligente y elegir uno al azar, aunque azar sobre azar es azar no lo se
             p2=random.randint(0,len(self.closeField.getCards())-1)
-            return str(validCards[p2])
+            return str(p2)
 
 
 
