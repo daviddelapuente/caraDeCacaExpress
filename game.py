@@ -45,9 +45,8 @@ class gameIA:
             self.gameState.refreshDumpster(newDump)
         else:
             cardsPlayed=self.player1.playFromCloseField(int(jugada))
-            newDump=self.table.dump.pushCards(cardsPlayed)
-            self.gameState.refreshDumpster(newDump)
-
+            self.player1.hand.addCards(cardsPlayed)
+            self.askPlayer1ToPlay()
             
     
     #aqui es donde juega el player2
@@ -103,24 +102,20 @@ class gameIA:
                     newDump=self.table.dump.pushCards(cardsPlayed)
                     self.gameState.refreshDumpster(newDump)
                     
-
-
-    def start(self):
-        print("repartiendo cartas")
-        self.table.repartirCartas()
-
+    def askPlayer1ToPlay(self):
+        clearscreen()
         self.printGame()
         jugada = input("tu jugada: ")
+        self.player1Play(jugada)
+        
+
+    def start(self):
+        clearscreen()
+        print("repartiendo cartas")
+        self.table.repartirCartas()    
         while(self.keepPlaying):
-            clearscreen()
-            self.player1Play(jugada)
+            self.askPlayer1ToPlay()
             self.player2Play()
-            self.printGame()
-            jugada=input("tu jugada: ")
-            if jugada=="exit":
-                self.keepPlaying=False
-
-
         self.endGame()
 
 
