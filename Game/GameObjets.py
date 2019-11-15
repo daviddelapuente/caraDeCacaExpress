@@ -23,6 +23,7 @@ class field:
         self.cards = auxField
 
     def getCards(self):
+        #tal vez puede ser solo return self.cards
         cards=[]
         for i in range(len(self.cards)):
             cards.append(self.cards[i])
@@ -92,8 +93,8 @@ class dumpster(field):
         self.dump=[]
 
     def draw(self):
-        aux=self.dump
-        self.dump=[]
+        aux=self.cards
+        self.cards=[]
         return aux
 
     def show(self):
@@ -114,6 +115,15 @@ class dumpster(field):
     def pushCards(self,newCards):
         self.cards+=newCards
         return self
+
+    def isEmpty(self):
+        if len(self.cards)==0:
+            return True
+        else:
+            return False
+    
+    def getTop(self):
+        return self.cards[len(self.cards)-1]
 
     
 
@@ -250,7 +260,21 @@ class player:
         self.openField=openField
         self.closeField=closeField
 
+    def getValidCards(self,dumpster):
+        cards=self.hand.getCards()
+        if dumpster.isEmpty():
+            return cards
+        else:
+            top=dumpster.getTop().getValue()
+            #this are the indexes
+            validCardsI=[]
 
+            for i in range(len(cards)):
+                if cards[i].getValue()>=top:
+                    validCardsI.append(i)
+            return validCardsI
+
+        
     def addTohand(self,newCards):
         self.hand.addCards(newCards)
 
@@ -281,7 +305,7 @@ class IAPlayer(player):
             str+="[*]"
         print(str)
 
-
+    
     def printHand(self):
         str=""
         hand=self.getHand()
@@ -300,16 +324,28 @@ class gameState():
     def refreshDumpster(self,newDump):
         self.dump=newDump
 
+#this is the simplest randomPlayer, it only can play 1 card at time
+#(im planing to create another randomPlayer that can play 1 or more cards of the same type)
 class randomPlayer(IAPlayer):
     def __init__(self,hand,openField,closeField):
         player.__init__(self,hand,openField,closeField)
 
-
-    def playFromHand(self,gs):
-        if(gs.getDumpster().fieldLen()==0):
-            print("juega al azar desde 0")
+    def think(self,gs):
+        validCards=self.getValidCards(gs.getDumpster())
+        if len(validCards)==0:
+            return "out"
         else:
-            print("hay mas de 0 cartas")
+            p=random.random()
+            if p<0.05:
+                #decide que se las quiere llevar
+                return "out"
+            else:
+                p2=random.randint(0,len(validCards)-1)
+                return str(validCards[p2])
+
+
+    def playFromHand(self,x,y=-1):
+        return self.hand.playCards(x,y)
 
     def playFromOpenField(self,x,y=-1):
         print("not implemented")

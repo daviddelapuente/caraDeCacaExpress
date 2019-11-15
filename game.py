@@ -25,14 +25,31 @@ class gameIA:
         if len(jugadas)>1:
             cardsPlayed=self.player1.playFromHand(int(jugadas[0]),int(jugadas[1]))
         else:
-            cardPlayed=self.player1.playFromHand(int(jugada))
-            newDump=self.table.dump.pushCards(cardPlayed)
-            self.gameState.refreshDumpster(newDump)
+            cardsPlayed=self.player1.playFromHand(int(jugada))
+        
+        newDump=self.table.dump.pushCards(cardsPlayed)
+        self.gameState.refreshDumpster(newDump)
             
     
     #aqui es donde juega el player2
     def player2Play(self):
-        self.player2.playFromHand(self.gameState)
+        #self.player2.playFromHand(self.gameState)
+        
+        #jugada es un string
+        jugada=self.player2.think(self.gameState)
+        if jugada=="out":
+            print("player 2 draw the dumpster")
+            self.player2.hand.addCards(self.table.dump.draw())
+            self.gameState.refreshDumpster(self.table.dump)
+        else:
+            jugadas = jugada.split("-")
+            if len(jugadas)>1:
+                cardsPlayed=self.player2.playFromHand(int(jugadas[0]),int(jugadas[1]))
+            else:
+                cardsPlayed=self.player2.playFromHand(int(jugada))
+            newDump=self.table.dump.pushCards(cardsPlayed)
+            self.gameState.refreshDumpster(newDump)
+
 
     def start(self):
         print("repartiendo cartas")
