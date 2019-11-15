@@ -13,11 +13,13 @@ class gameIA:
 
 
     def printGame(self):
+        clearscreen()
         self.table.show()
 
 
-    def endGame(self):
+    def endGame(self,winnerMessage):
         print("fin del juego")
+        print(winnerMessage)
 
 
     def player1Play(self,jugada):
@@ -103,20 +105,35 @@ class gameIA:
                     self.gameState.refreshDumpster(newDump)
                     
     def askPlayer1ToPlay(self):
-        clearscreen()
         self.printGame()
         jugada = input("tu jugada: ")
         self.player1Play(jugada)
         
+    def playerWin(self,player):
+        b=False
+        if player.hand.fieldLen()==0 and player.closeField.fieldLen()==0:
+            b=True
+        return b
 
     def start(self):
         clearscreen()
         print("repartiendo cartas")
         self.table.repartirCartas()    
+        winnerMessage="gana jugador "
         while(self.keepPlaying):
             self.askPlayer1ToPlay()
+            if self.playerWin(self.player1):
+                self.printGame()
+                winnerMessage+="1"
+                self.keepPlaying=False
+                break
             self.player2Play()
-        self.endGame()
+            if self.playerWin(self.player2):
+                self.printGame()
+                winnerMessage+="2"
+                self.keepPlaying=False
+                break
+        self.endGame(winnerMessage)
 
 
 def clearscreen(numlines=100):
