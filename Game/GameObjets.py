@@ -260,10 +260,13 @@ class player:
         self.openField=openField
         self.closeField=closeField
 
-    def getValidCards(self,dumpster):
-        cards=self.hand.getCards()
+    def getValidCards(self,cards,dumpster):
+        
         if dumpster.isEmpty():
-            return cards
+            validCardsI=[]
+            for i in range(len(cards)):
+                validCardsI.append(i)
+            return validCardsI
         else:
             top=dumpster.getTop().getValue()
             #this are the indexes
@@ -284,6 +287,16 @@ class player:
     def addToCloseField(self,newCards):
         self.closeField.addCards(newCards)
 
+
+    def playFromHand(self,x,y=-1):
+        return self.hand.playCards(x,y)
+
+    def playFromOpenField(self,x,y=-1):
+        return self.openField.playCards(x,y)
+
+    def playFromCloseField(self,x):
+        return self.closeField.playCards(x)
+
     def getHand(self):
         return self.hand
     def getOpenField(self):
@@ -298,7 +311,7 @@ class IAPlayer(player):
     def __init__(self,hand,openField,closeField):
         player.__init__(self,hand,openField,closeField)
 
-    def printHandReverse(self):
+    def printHand(self):
         str=""
         hand = self.getHand()
         for i in range(hand.fieldLen()):
@@ -306,7 +319,7 @@ class IAPlayer(player):
         print(str)
 
     
-    def printHand(self):
+    def printHandasd(self):
         str=""
         hand=self.getHand()
         cards=hand.getCards()
@@ -331,7 +344,20 @@ class randomPlayer(IAPlayer):
         player.__init__(self,hand,openField,closeField)
 
     def think(self,gs):
-        validCards=self.getValidCards(gs.getDumpster())
+        validCards=self.getValidCards(self.hand.getCards(),gs.getDumpster())
+        if len(validCards)==0:
+            return "out"
+        else:
+            p=random.random()
+            if p<0.05:
+                #decide que se las quiere llevar
+                return "out"
+            else:
+                p2=random.randint(0,len(validCards)-1)
+                return str(validCards[p2])
+    
+    def thinkOpenField(self,gs):
+        validCards=self.getValidCards(self.openField.getCards(),gs.getDumpster())
         if len(validCards)==0:
             return "out"
         else:
@@ -343,15 +369,18 @@ class randomPlayer(IAPlayer):
                 p2=random.randint(0,len(validCards)-1)
                 return str(validCards[p2])
 
+    def thinkCloseField(self,gs):
+        p=random.random()
+        if p<0.05:
+            #decide que se las quiere llevar
+            return "out"
+        else:
+            p2=random.randint(0,len(self.closeField.getCards())-1)
+            return str(validCards[p2])
 
-    def playFromHand(self,x,y=-1):
-        return self.hand.playCards(x,y)
 
-    def playFromOpenField(self,x,y=-1):
-        print("not implemented")
 
-    def playFromCloseField(self,x):
-        print("not implemented")
+
 
 class realPlayer(player):
     def __init__(self,hand,openField,closeField):

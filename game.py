@@ -21,32 +21,69 @@ class gameIA:
 
 
     def player1Play(self,jugada):
-        jugadas = jugada.split("-")
-        if len(jugadas)>1:
-            cardsPlayed=self.player1.playFromHand(int(jugadas[0]),int(jugadas[1]))
+        if jugada=="draw":
+            print("player 1 draw the dumpster")
+            self.player1.hand.addCards(self.table.dump.draw())
+            self.gameState.refreshDumpster(self.table.dump)
+        elif len(self.player1.hand.cards)>0:
+            jugadas = jugada.split("-")
+            if len(jugadas)>1:
+                cardsPlayed=self.player1.playFromHand(int(jugadas[0]),int(jugadas[1]))
+            else:
+                cardsPlayed=self.player1.playFromHand(int(jugada))
+            
+            newDump=self.table.dump.pushCards(cardsPlayed)
+            self.gameState.refreshDumpster(newDump)
+        elif len(self.player1.openField.cards)>0:
+            jugadas = jugada.split("-")
+            if len(jugadas)>1:
+                cardsPlayed=self.player1.playFromOpenField(int(jugadas[0]),int(jugadas[1]))
+            else:
+                cardsPlayed=self.player1.playFromOpenField(int(jugada))
+            
+            newDump=self.table.dump.pushCards(cardsPlayed)
+            self.gameState.refreshDumpster(newDump)
         else:
-            cardsPlayed=self.player1.playFromHand(int(jugada))
-        
-        newDump=self.table.dump.pushCards(cardsPlayed)
-        self.gameState.refreshDumpster(newDump)
+            cardsPlayed=self.player1.playFromCloseField(int(jugada))
+            newDump=self.table.dump.pushCards(cardsPlayed)
+            self.gameState.refreshDumpster(newDump)
+
             
     
     #aqui es donde juega el player2
     def player2Play(self):
-        #self.player2.playFromHand(self.gameState)
-        
-        #jugada es un string
-        jugada=self.player2.think(self.gameState)
-        if jugada=="out":
-            print("player 2 draw the dumpster")
-            self.player2.hand.addCards(self.table.dump.draw())
-            self.gameState.refreshDumpster(self.table.dump)
-        else:
+
+        if len(player2.hand.cards)>0:
+            #jugada es un string
+            jugada=self.player2.think(self.gameState)
+            if jugada=="out":
+                print("player 2 draw the dumpster")
+                self.player2.hand.addCards(self.table.dump.draw())
+                self.gameState.refreshDumpster(self.table.dump)
+            else:
+                
+                jugadas = jugada.split("-")
+                if len(jugadas)>1:
+                    cardsPlayed=self.player2.playFromHand(int(jugadas[0]),int(jugadas[1]))
+                else:
+                    cardsPlayed=self.player2.playFromHand(int(jugada))
+                newDump=self.table.dump.pushCards(cardsPlayed)
+                self.gameState.refreshDumpster(newDump)
+        elif len(player2.openField.cards)>0:
+            #jugar con openField
+            jugada=self.player2.thinkOpenField(self.gameState)
             jugadas = jugada.split("-")
             if len(jugadas)>1:
-                cardsPlayed=self.player2.playFromHand(int(jugadas[0]),int(jugadas[1]))
+                cardsPlayed=self.player2.playFromOpenField(int(jugadas[0]),int(jugadas[1]))
             else:
-                cardsPlayed=self.player2.playFromHand(int(jugada))
+                cardsPlayed=self.player2.playFromOpenField(int(jugada))
+            
+            newDump=self.table.dump.pushCards(cardsPlayed)
+            self.gameState.refreshDumpster(newDump)
+        else:
+            #jugar con closeField
+            jugada=self.player2.thinkCloseField(self.gameState)
+            cardsPlayed=self.player2.playFromCloseField(int(jugada))
             newDump=self.table.dump.pushCards(cardsPlayed)
             self.gameState.refreshDumpster(newDump)
 
