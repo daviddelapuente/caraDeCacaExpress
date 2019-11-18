@@ -45,6 +45,31 @@ class field:
     def show(self):
         pass
 
+    def filterSemantic(self,jugadas,dump):
+        if jugadas[0]=="draw":
+            return True
+        if len(jugadas)==1:
+            if int(jugadas[0])>=self.fieldLen():
+                return False
+            cards=self.getCards()
+            cardValue=cards[int(jugadas[0])].getValue()
+            if dump.isEmpty() or dump.getTop().getValue()<=cardValue:
+                return True
+            return False
+        else:
+            if int(jugadas[0])>=self.fieldLen() or int(jugadas[1])>=self.fieldLen():
+                return False
+
+            cards=self.getCards()
+            cardValue=cards[int(jugadas[0])].getValue()
+            for i in range(int(jugadas[0]),int(jugadas[1])+1):
+                if cards[int(i)].getValue()!=cardValue:
+                    return False
+            if dump.isEmpty() or dump.getTop().getValue()<=cardValue:
+                return True
+            return False
+        return True
+
 class openField(field):
     def __init__(self,cards):
         field.__init__(self,cards)
@@ -69,6 +94,15 @@ class  closeField(field):
 
         cardsPlayed.append(self.cards.pop(x))
         return cardsPlayed
+
+    def filterSemantic(self,jugadas,dump):
+        if jugadas[0]=="draw":
+            return True
+        elif len(jugadas)>1:
+            return False
+        elif int(jugadas[0])>=self.fieldLen():
+            return False
+        return True
 
 
 class hand(field):
@@ -301,7 +335,7 @@ class player:
     def playFromOpenField(self,x,y=-1):
         cards=self.openField.playCards(x,y)
         if self.openField.fieldLen()==0:
-            self.actualField=self.closeFields
+            self.actualField=self.closeField
         return cards
 
     def playFromCloseField(self,x):
@@ -361,7 +395,7 @@ class randomPlayer(IAPlayer):
             return "out"
         else:
             p=random.random()
-            if p<0.05:
+            if p<0.05 and not gs.dump.isEmpty():
                 #decide que se las quiere llevar
                 return "out"
             else:
@@ -406,12 +440,3 @@ class realPlayer(player):
         for i in range(hand.fieldLen()):
             str+="["+ cards[i].getChar() +"]"
         print(str)
-
-    def playFromHand(self,x,y=-1):
-        return self.hand.playCards(x,y)
-
-    def playFromOpenField(self,x,y=-1):
-        return self.openField.playCards(x,y)
-
-    def playFromCloseField(self,x):
-        return self.closeField.playCards(x)

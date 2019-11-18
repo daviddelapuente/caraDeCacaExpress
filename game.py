@@ -24,7 +24,7 @@ class gameIA:
     def player1Play(self,jugada):
         if jugada=="draw":
             self.boardMessage="jugador 1 roba el pozo"
-            self.player1.hand.addCards(self.table.dump.draw())
+            self.player1.addTohand(self.table.dump.draw())
             self.gameState.refreshDumpster(self.table.dump)
         elif len(self.player1.hand.cards)>0:
             jugadas = jugada.split("-")
@@ -46,7 +46,7 @@ class gameIA:
             self.gameState.refreshDumpster(newDump)
         else:
             cardsPlayed=self.player1.playFromCloseField(int(jugada))
-            self.player1.hand.addCards(cardsPlayed)
+            self.player1.addTohand(cardsPlayed)
             self.askPlayer1ToPlay()
             
     
@@ -107,7 +107,7 @@ class gameIA:
         self.printGame()
         jugada = input("tu jugada: ")
         jugadas=jugada.split("-")
-        if filterJugadaSintaxis(jugadas) and filterJugadaSemantic(jugadas,self.player1.actualField,self.table.dump):
+        if filterJugadaSintaxis(jugadas) and self.player1.actualField.filterSemantic(jugadas,self.table.dump):
             self.player1Play(jugada)
         else:
             self.boardMessage="ingresa una jugada valida"

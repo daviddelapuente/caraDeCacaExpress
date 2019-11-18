@@ -1,4 +1,7 @@
 import os
+def clearscreen2():
+    pass
+
 def clearscreen(numlines=100):
   """Clear the console.
 numlines is an optional argument used only as a fall-back.
@@ -26,17 +29,3 @@ def filterJugadaSintaxis(jugadas):
             return True
         return False
     return False
-
-#this check what you wrote is semantic valid
-def filterJugadaSemantic(jugadas,field,dump):
-    if jugadas[0]=="draw":
-        return True
-    cards=field.getCards()
-    cardValue=cards[int(jugadas[0])].getValue()
-    for i in jugadas:
-        if cards[int(i)].getValue()!=cardValue:
-            return False
-    if dump.isEmpty() or dump.getTop().getValue()<=cardValue:
-        return True
-    return False
-    
