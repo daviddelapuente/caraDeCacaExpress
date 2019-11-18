@@ -259,9 +259,9 @@ class player:
         self.hand=hand
         self.openField=openField
         self.closeField=closeField
+        self.actualField=self.hand
 
     def getValidCards(self,cards,dumpster):
-        
         if dumpster.isEmpty():
             validCardsI=[]
             for i in range(len(cards)):
@@ -280,6 +280,7 @@ class player:
         
     def addTohand(self,newCards):
         self.hand.addCards(newCards)
+        self.actualField=self.hand
 
     def addToOpenField(self,newCards):
         self.openField.addCards(newCards)
@@ -289,10 +290,19 @@ class player:
 
 
     def playFromHand(self,x,y=-1):
-        return self.hand.playCards(x,y)
+        cards=self.hand.playCards(x,y)
+        if self.hand.fieldLen()==0:
+            if self.openField.fieldLen()>0:
+                self.actualField=self.openField
+            else:
+                self.actualField=self.closeField
+        return cards
 
     def playFromOpenField(self,x,y=-1):
-        return self.openField.playCards(x,y)
+        cards=self.openField.playCards(x,y)
+        if self.openField.fieldLen()==0:
+            self.actualField=self.closeFields
+        return cards
 
     def playFromCloseField(self,x):
         return self.closeField.playCards(x)
@@ -303,6 +313,8 @@ class player:
         return self.openField
     def getCloseField(self):
         return self.closeField
+    
+    
 
 
 

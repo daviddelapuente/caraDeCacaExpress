@@ -1,30 +1,29 @@
 from Game.GameObjets import *
-import os
+from displayThings.consoleDisplay import *
+
 class gameIA:
-    def __init__(self,IA,deck,handLen,fieldsLen,dump):
-
-
+    def __init__(self,IA,deck,handLen,fieldsLen):
+        self.boardMessage=""
         self.player1=realPlayer(hand([]),openField([]),closeField([]))
         self.player2=IA
         self.table = table(deck, handLen, fieldsLen,self.player1,self.player2)
         self.keepPlaying=True
-        self.gameState=gameState(dump)
-
-
+        self.gameState=gameState(self.table.dump)
 
     def printGame(self):
         clearscreen()
+        print(self.boardMessage)
         self.table.show()
-
+        #is important to set the board message to "" because if not, then the massege will be printed on every turn.
+        self.boardMessage=""
 
     def endGame(self,winnerMessage):
-        print("fin del juego")
+        print("end of the game")
         print(winnerMessage)
-
 
     def player1Play(self,jugada):
         if jugada=="draw":
-           
+            self.boardMessage="jugador 1 roba el pozo"
             self.player1.hand.addCards(self.table.dump.draw())
             self.gameState.refreshDumpster(self.table.dump)
         elif len(self.player1.hand.cards)>0:
@@ -54,10 +53,10 @@ class gameIA:
     #aqui es donde juega el player2
     def player2Play(self):
         if len(player2.hand.cards)>0:
-            #jugada es un string
+            #player2 plays from the hand
             jugada=self.player2.think(self.gameState)
             if jugada=="out":
-                
+                self.boardMessage="jugador 2 roba el pozo"
                 self.player2.hand.addCards(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
             else:             
@@ -72,7 +71,7 @@ class gameIA:
             #jugar con openField
             jugada=self.player2.thinkOpenField(self.gameState)
             if jugada=="out":
-                
+                self.boardMessage="jugador 2 roba el pozo"
                 self.player2.hand.addCards(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
             else:
@@ -88,7 +87,7 @@ class gameIA:
             #jugar con closeField
             jugada=self.player2.thinkCloseField(self.gameState)
             if jugada=="out":
-                
+                self.boardMessage="jugador 2 roba el pozo"
                 self.player2.hand.addCards(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
             else:
@@ -103,58 +102,42 @@ class gameIA:
                 else:
                     newDump=self.table.dump.pushCards(cardsPlayed)
                     self.gameState.refreshDumpster(newDump)
-                    
+
     def askPlayer1ToPlay(self):
         self.printGame()
         jugada = input("tu jugada: ")
-        self.player1Play(jugada)
+        jugadas=jugada.split("-")
+        if filterJugadaSintaxis(jugadas) and filterJugadaSemantic(jugadas,self.player1.actualField,self.table.dump):
+            self.player1Play(jugada)
+        else:
+            self.boardMessage="ingresa una jugada valida"
+            self.askPlayer1ToPlay()
         
     def playerWin(self,player):
-        b=False
         if player.hand.fieldLen()==0 and player.closeField.fieldLen()==0:
-            b=True
-        return b
+            return True
+        return False
 
     def start(self):
         clearscreen()
-        print("repartiendo cartas")
-        self.table.repartirCartas()    
-        winnerMessage="gana jugador "
-        while(self.keepPlaying):
+        self.table.repartirCartas()
+        #here is a while true that keep the game alive but it will eventualy end when someone wins
+        while(True):
             self.askPlayer1ToPlay()
             if self.playerWin(self.player1):
                 self.printGame()
-                winnerMessage+="1"
-                self.keepPlaying=False
+                winnerMessage="gana jugador " + "1"
                 break
             self.player2Play()
             if self.playerWin(self.player2):
                 self.printGame()
-                winnerMessage+="2"
-                self.keepPlaying=False
+                winnerMessage="gana jugador " + "2"
                 break
         self.endGame(winnerMessage)
 
-
-def clearscreen(numlines=100):
-  """Clear the console.
-numlines is an optional argument used only as a fall-back.
-"""
-# Thanks to Steven D'Aprano, http://www.velocityreviews.com/forums
-
-  if os.name == "posix":
-    # Unix/Linux/MacOS/BSD/etc
-    os.system('clear')
-  elif os.name in ("nt", "dos", "ce"):
-    # DOS/Windows
-    os.system('CLS')
-  else:
-    # Fallback for other operating systems.
-    print('\n' * numlines)
-
 player2=randomPlayer(hand([]),openField([]),closeField([]))
 deck=deck([card('2',2,2),card('2',2,2),card('2',2,2),card('2',2,2),card('3',3,3),card('3',3,3),card('7',7,7),card('7',7,7),card('7',7,7),card('7',7,7),card('10',10,10),card('10',10,10),card('10',10,10),card('10',10,10),card('11',11,11),card('11',11,11),card('11',11,11),card('11',11,11),card('13',13,13),card('13',13,13),card('13',13,13),card('13',13,13),card('14',14,14),card('14',14,14)])
-gameIA=gameIA(player2,deck,4,4,dumpster())
+gameIA=gameIA(player2,deck,4,4)
 gameIA.start()
 
 
