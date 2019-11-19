@@ -4,7 +4,7 @@ from displayThings.consoleDisplay import *
 class gameIA:
     def __init__(self,IA,deck,handLen,fieldsLen):
         self.boardMessage=""
-        self.player1=realPlayer(hand([]),openField([]),closeField([]))
+        self.player1=player(hand([]),openField([]),closeField([]))
         self.player2=IA
         self.table = table(deck, handLen, fieldsLen,[self.player1,self.player2])
         self.keepPlaying=True
@@ -25,15 +25,15 @@ class gameIA:
         if jugadas[0]=="draw":
             self.boardMessage="jugador 1 roba el pozo"
             self.player1.addTohand(self.table.dump.draw())
-            self.gameState.refreshDumpster(self.table.dump)
+            self.gameState.setDumpster(self.table.dump)
         elif len(self.player1.hand.cards)>0:
             cardsPlayed=self.player1.playFromHand(jugadas)       
             newDump=self.table.dump.pushCards(cardsPlayed)
-            self.gameState.refreshDumpster(newDump)
+            self.gameState.setDumpster(newDump)
         elif len(self.player1.openField.cards)>0:
             cardsPlayed=self.player1.playFromOpenField(jugadas)
             newDump=self.table.dump.pushCards(cardsPlayed)
-            self.gameState.refreshDumpster(newDump)
+            self.gameState.setDumpster(newDump)
         else:
             cardsPlayed=self.player1.playFromCloseField(jugadas)
             self.player1.addTohand(cardsPlayed)
@@ -46,27 +46,27 @@ class gameIA:
         if jugadas[0]=="out":
                 self.boardMessage="jugador 2 roba el pozo"
                 self.player2.hand.addCards(self.table.dump.draw())
-                self.gameState.refreshDumpster(self.table.dump)
+                self.gameState.setDumpster(self.table.dump)
         elif len(player2.hand.cards)>0:
                 #player2 plays from the hand
                 cardsPlayed=self.player2.playFromHand(jugadas)
                 newDump=self.table.dump.pushCards(cardsPlayed)
-                self.gameState.refreshDumpster(newDump)
+                self.gameState.setDumpster(newDump)
         elif len(player2.openField.cards)>0:
             #jugar con openField
                 cardsPlayed=self.player2.playFromOpenField(jugadas)
                 newDump=self.table.dump.pushCards(cardsPlayed)
-                self.gameState.refreshDumpster(newDump)
+                self.gameState.setDumpster(newDump)
         else:
             #jugar con closeField            
             cardsPlayed=self.player2.playFromCloseField(jugadas)
             if self.table.dump.isEmpty() or cardsPlayed[0].getValue()>=self.table.dump.getTop().getValue():
                 newDump=self.table.dump.pushCards(cardsPlayed)
-                self.gameState.refreshDumpster(newDump)
+                self.gameState.setDumpster(newDump)
             else:
                 self.player2.addTohand(cardsPlayed)
                 self.player2.addTohand(self.table.dump.draw())
-                self.gameState.refreshDumpster(self.table.dump)
+                self.gameState.setDumpster(self.table.dump)
 
     def askPlayer1ToPlay(self):
         self.printGame()

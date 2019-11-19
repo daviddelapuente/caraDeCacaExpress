@@ -206,43 +206,41 @@ class player:
         self.closeField=closeField
         self.actualField=self.hand
 
+    #getters
+    def getHand(self):
+        return self.hand
+    def getOpenField(self):
+        return self.openField
+    def getCloseField(self):
+        return self.closeField
+    
+    #adders(this add cards to a field and change the actualField)
+    def addTohand(self,newCards):
+        self.hand.addCards(newCards)
+        self.actualField=self.hand
+    def addToOpenField(self,newCards):
+        self.openField.addCards(newCards)
+    def addToCloseField(self,newCards):
+        self.closeField.addCards(newCards)
+
     def getValidCards(self,cards,dumpster):
         if dumpster.isEmpty():
-            validCardsI=[]
-            for i in range(len(cards)):
-                validCardsI.append(i)
-            return validCardsI
+            return range(len(cards))
         else:
-            top=dumpster.getTop().getValue()
-            #this are the indexes
+            #the idea is to returns the indexes of the valid cards
+            top=dumpster.getTop().getValue()    
             validCardsI=[]
-
             for i in range(len(cards)):
                 if cards[i].getValue()>=top:
                     validCardsI.append(i)
             return validCardsI
 
-        
-    def addTohand(self,newCards):
-        self.hand.addCards(newCards)
-        self.actualField=self.hand
-
-    def addToOpenField(self,newCards):
-        self.openField.addCards(newCards)
-
-    def addToCloseField(self,newCards):
-        self.closeField.addCards(newCards)
-
-
     def playFromHand(self,jugadas):
         if len(jugadas)==1:
-            x=int(jugadas[0])
-            y=-1
+            cards=self.hand.playCards(int(jugadas[0]),-1)
         else:
-            x=int(jugadas[0])
-            y=int(jugadas[1])
-
-        cards=self.hand.playCards(x,y)
+            cards=self.hand.playCards(int(jugadas[0]),int(jugadas[1]))
+        #change actualField
         if self.hand.fieldLen()==0:
             if self.openField.fieldLen()>0:
                 self.actualField=self.openField
@@ -254,36 +252,15 @@ class player:
         if len(jugadas)==1:
             x=int(jugadas[0])
             y=-1
+            cards=self.openField.playCards(int(jugadas[0]),-1)
         else:
-            x=int(jugadas[0])
-            y=int(jugadas[1])
-        cards=self.openField.playCards(x,y)
+            cards=self.openField.playCards(int(jugadas[0]),int(jugadas[1]))
         if self.openField.fieldLen()==0:
             self.actualField=self.closeField
         return cards
 
     def playFromCloseField(self,jugadas):
-        x=int(jugadas[0])
-        return self.closeField.playCards(x)
-
-    def getHand(self):
-        return self.hand
-    def getOpenField(self):
-        return self.openField
-    def getCloseField(self):
-        return self.closeField
-
-class IAPlayer(player):
-    def __init__(self,hand,openField,closeField):
-        player.__init__(self,hand,openField,closeField)
-
-    def printHandReverse(self):
-        str=""
-        hand = self.getHand()
-        for i in range(hand.fieldLen()):
-            str+="[*]"
-        print(str)
-
+        return self.closeField.playCards(int(jugadas[0]))
     
     def printHand(self):
         str=""
@@ -293,53 +270,36 @@ class IAPlayer(player):
             str+="["+ cards[i].getChar() +"]"
         print(str)
 
-#this player will play a random cards from de subset of playable cards in the hand
+class IAPlayer(player):
+    def printHandReverse(self):
+        str=""
+        hand = self.getHand()
+        for i in range(hand.fieldLen()):
+            str+="[*]"
+        print(str)
 
+#now this isnt a big class, but in the future I plan to make this bigger so ia can have more context to take desicions
 class gameState():
     def __init__(self,dump):
         self.dump=dump
     def getDumpster(self):
         return self.dump
-    def refreshDumpster(self,newDump):
+    def setDumpster(self,newDump):
         self.dump=newDump
 
+#this player will play a random cards from de subset of playable cards in the hand
 #this is the simplest randomPlayer, it only can play 1 card at time
-#(im planing to create another randomPlayer that can play 1 or more cards of the same type)
 class randomPlayer(IAPlayer):
-    def __init__(self,hand,openField,closeField):
-        player.__init__(self,hand,openField,closeField)
-
     def think(self,gs):
+        p=random.random()
+        if p<0.05 and not gs.dump.isEmpty():
+            #decide que se las quiere llevar
+            return "out"
         if isinstance(self.actualField,closeField):
-            p=random.random()
-            if p<0.05 and not gs.dump.isEmpty():
-                #decide que se las quiere llevar
-                return "out"
-            else:
-                #esto podria ser mas inteligente y elegir uno al azar, aunque azar sobre azar es azar no lo se
-                p2=random.randint(0,len(self.closeField.getCards())-1)
-                return str(p2)
+            return str(random.randint(0,len(self.closeField.getCards())-1))
         else:
             validCards=self.getValidCards(self.actualField.getCards(),gs.getDumpster())
             if len(validCards)==0:
                 return "out"
             else:
-                p=random.random()
-                if p<0.05 and not gs.dump.isEmpty():
-                    #decide que se las quiere llevar
-                    return "out"
-                else:
-                    p2=random.randint(0,len(validCards)-1)
-                    return str(validCards[p2])
-
-class realPlayer(player):
-    def __init__(self,hand,openField,closeField):
-        player.__init__(self,hand,openField,closeField)
-
-    def printHand(self):
-        str=""
-        hand=self.getHand()
-        cards=hand.getCards()
-        for i in range(hand.fieldLen()):
-            str+="["+ cards[i].getChar() +"]"
-        print(str)
+                return str(validCards[random.randint(0,len(validCards)-1)])
