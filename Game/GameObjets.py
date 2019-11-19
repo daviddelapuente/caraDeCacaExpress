@@ -218,8 +218,10 @@ class player:
     def addTohand(self,newCards):
         self.hand.addCards(newCards)
         self.actualField=self.hand
+
     def addToOpenField(self,newCards):
         self.openField.addCards(newCards)
+
     def addToCloseField(self,newCards):
         self.closeField.addCards(newCards)
 
@@ -292,7 +294,7 @@ class gameState():
 class randomPlayer(IAPlayer):
     def __init__(self,hand,openField,closeField):
         IAPlayer.__init__(self,hand,openField,closeField)
-        self.pForDraw=0.05
+        self.pForDraw=0
 
     def think(self,gs):
         p=random.random()
@@ -313,8 +315,8 @@ class randomPlayer(IAPlayer):
 class randomPlayerV2(IAPlayer):
     def __init__(self,hand,openField,closeField):
         IAPlayer.__init__(self,hand,openField,closeField)
-        self.pForDraw=0.05
-        self.pForMoreThanOne=0.70
+        self.pForDraw=0
+        self.pForMoreThanOne=1
 
     def getValidSets(self,cards,dumpster):
         if dumpster.isEmpty():
