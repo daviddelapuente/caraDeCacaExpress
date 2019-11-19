@@ -1,8 +1,5 @@
 import random
 
-
-
-
 class field:
     def __init__(self,cards):
         self.cards=cards
@@ -12,22 +9,16 @@ class field:
 
     def sortField(self):
         auxField = []
-
         while (len(self.cards) > 0):
             maxI = 0
             for i in range(self.fieldLen()):
                 if self.cards[i].getValue() >= self.cards[maxI].getValue():
                     maxI = i
-
             auxField.append(self.cards.pop(maxI))
         self.cards = auxField
 
     def getCards(self):
-        #tal vez puede ser solo return self.cards
-        cards=[]
-        for i in range(len(self.cards)):
-            cards.append(self.cards[i])
-        return cards
+        return self.cards
 
     def shuffleField(self):
         random.shuffle(self.cards)
@@ -36,17 +27,10 @@ class field:
         self.cards+=newCards
         self.sortField()
 
-    def cardsToTupple(self,objet):
-        cardsTupple=[]
-        for i in range(len(objet)):
-            cardsTupple.append(objet[i].getTupple())
-        return cardsTupple
-
-    def show(self):
-        pass
-
     def filterSemantic(self,jugadas,dump):
         if jugadas[0]=="draw":
+            if dump.isEmpty():
+                return False
             return True
         if len(jugadas)==1:
             if int(jugadas[0])>=self.fieldLen():
@@ -404,18 +388,27 @@ class randomPlayer(IAPlayer):
         player.__init__(self,hand,openField,closeField)
 
     def think(self,gs):
-        validCards=self.getValidCards(self.actualField.getCards(),gs.getDumpster())
-        if len(validCards)==0:
-            return "out"
-        else:
+        if isinstance(self.actualField,closeField):
             p=random.random()
             if p<0.05 and not gs.dump.isEmpty():
                 #decide que se las quiere llevar
                 return "out"
             else:
-                p2=random.randint(0,len(validCards)-1)
-                return str(validCards[p2])
-
+                #esto podria ser mas inteligente y elegir uno al azar, aunque azar sobre azar es azar no lo se
+                p2=random.randint(0,len(self.closeField.getCards())-1)
+                return str(p2)
+        else:
+            validCards=self.getValidCards(self.actualField.getCards(),gs.getDumpster())
+            if len(validCards)==0:
+                return "out"
+            else:
+                p=random.random()
+                if p<0.05 and not gs.dump.isEmpty():
+                    #decide que se las quiere llevar
+                    return "out"
+                else:
+                    p2=random.randint(0,len(validCards)-1)
+                    return str(validCards[p2])
 
 
 

@@ -38,13 +38,7 @@ class gameIA:
             cardsPlayed=self.player1.playFromCloseField(jugadas)
             self.player1.addTohand(cardsPlayed)
             self.askPlayer1ToPlay()
-
-
-    #error1) jugador 1 puede robar el pozo vacio y saltar su turno
-    #error2) jugador 2 no pone cartas de closefield en hand, cuando falla
-    #error3) relacionado con el error anterior, cuando jugador 2 tiene la mano y openfield vacios y ocurre 2) el juego intenta jugar de la mano por que cambia
-    #el contexto
-            
+      
     #aqui es donde juega el player2
     def player2Play(self):
         jugada=self.player2.think(self.gameState)
@@ -70,62 +64,9 @@ class gameIA:
                 newDump=self.table.dump.pushCards(cardsPlayed)
                 self.gameState.refreshDumpster(newDump)
             else:
-                self.player2.hand.addCards(cardsPlayed)
-                self.player2.hand.addCards(self.table.dump.draw())
+                self.player2.addTohand(cardsPlayed)
+                self.player2.addTohand(self.table.dump.draw())
                 self.gameState.refreshDumpster(self.table.dump)
-
-    #aqui es donde juega el player2
-    def player2Play2(self):
-        if len(player2.hand.cards)>0:
-            #player2 plays from the hand
-            jugada=self.player2.think(self.gameState)
-            if jugada=="out":
-                self.boardMessage="jugador 2 roba el pozo"
-                self.player2.hand.addCards(self.table.dump.draw())
-                self.gameState.refreshDumpster(self.table.dump)
-            else:             
-                jugadas = jugada.split("-")
-                if len(jugadas)>1:
-                    cardsPlayed=self.player2.playFromHand(jugadas)
-                else:
-                    cardsPlayed=self.player2.playFromHand(jugadas)
-                newDump=self.table.dump.pushCards(cardsPlayed)
-                self.gameState.refreshDumpster(newDump)
-        elif len(player2.openField.cards)>0:
-            #jugar con openField
-            jugada=self.player2.thinkOpenField(self.gameState)
-            if jugada=="out":
-                self.boardMessage="jugador 2 roba el pozo"
-                self.player2.hand.addCards(self.table.dump.draw())
-                self.gameState.refreshDumpster(self.table.dump)
-            else:
-                jugadas = jugada.split("-")
-                if len(jugadas)>1:
-                    cardsPlayed=self.player2.playFromOpenField(jugadas)
-                else:
-                    cardsPlayed=self.player2.playFromOpenField(jugadas)
-                
-                newDump=self.table.dump.pushCards(cardsPlayed)
-                self.gameState.refreshDumpster(newDump)
-        else:
-            #jugar con closeField
-            jugada=self.player2.thinkCloseField(self.gameState)
-            if jugada=="out":
-                self.boardMessage="jugador 2 roba el pozo"
-                self.player2.hand.addCards(self.table.dump.draw())
-                self.gameState.refreshDumpster(self.table.dump)
-            else:
-                cardsPlayed=self.player2.playFromCloseField(jugadas)
-                if self.table.dump.isEmpty():
-                    newDump=self.table.dump.pushCards(cardsPlayed)
-                    self.gameState.refreshDumpster(newDump)
-                elif cardsPlayed[0].getValue()<self.table.dump.getTop().getValue():
-                    self.player2.hand.addCards(cardsPlayed)
-                    self.player2.hand.addCards(self.table.dump.draw())
-                    self.gameState.refreshDumpster(self.table.dump)
-                else:
-                    newDump=self.table.dump.pushCards(cardsPlayed)
-                    self.gameState.refreshDumpster(newDump)
 
     def askPlayer1ToPlay(self):
         self.printGame()
