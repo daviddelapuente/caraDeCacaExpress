@@ -6,7 +6,7 @@ class gameIA:
         self.boardMessage=""
         self.player1=realPlayer(hand([]),openField([]),closeField([]))
         self.player2=IA
-        self.table = table(deck, handLen, fieldsLen,self.player1,self.player2)
+        self.table = table(deck, handLen, fieldsLen,[self.player1,self.player2])
         self.keepPlaying=True
         self.gameState=gameState(self.table.dump)
 

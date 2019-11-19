@@ -138,8 +138,6 @@ class card:
         return self.value
     def getVirtualValue(self):
         return self.virtual_value
-    def getTupple(self):
-        return [self.char,self.value,self.virtual_value]
 
 class deck:
     def __init__(self,cards):
@@ -153,91 +151,53 @@ class deck:
 
     def drawX(self,x):
         drawSet=[]
-        for i in range(x):
+        for i in range(min(x,len(self.cards))):
             drawSet.append(self.cards.pop(len(self.cards)-1))
         return drawSet
 
-    def getCards(self):
-        cards=[]
-        for i in range(len(self.cards)):
-            cards.append(self.cards[i].getTupple())
-        return cards
-
-    def cardsToTupple(self,objet):
-        cardsTupple=[]
-        for i in range(len(objet)):
-            cardsTupple.append(objet[i].getTupple())
-        return cardsTupple
-
-
 class table:
-    def __init__(self,deck,handLen,fieldsLen,player1,player2):
+    def __init__(self,deck,handLen,fieldsLen,players):
         self.deck=deck
         self.handLen=handLen
         self.fieldsLen=fieldsLen
         self.dump=dumpster([])
-        self.player1=player1
-        self.player2=player2
-
+        self.players=players
 
     def repartirCartas(self):
-
         self.deck.shuffleDeck()
-        self.player1.addTohand(self.deck.drawX(self.handLen))
-        self.player1.addToOpenField(self.deck.drawX(self.fieldsLen))
-        self.player1.addToCloseField(self.deck.drawX(self.fieldsLen))
-
-        self.player2.addTohand(self.deck.drawX(self.handLen))
-        self.player2.addToOpenField(self.deck.drawX(self.fieldsLen))
-        self.player2.addToCloseField(self.deck.drawX(self.fieldsLen))
+        for player in self.players:
+            player.addTohand(self.deck.drawX(self.handLen))
+            player.addToOpenField(self.deck.drawX(self.fieldsLen))
+            player.addToCloseField(self.deck.drawX(self.fieldsLen))
 
     def show(self):
-        self.player2.printHand()
+        self.players[1].printHand()
         self.printTable()
-        self.player1.printHand()
-
+        self.players[0].printHand()
 
     def printTable(self):
         print("-----------------------")
-        self.printOponentCloseField()
-        self.printOponentOpenField()
+        self.printPlayerCloseField(self.players[1])
+        self.printPlayerOpenField(self.players[1])
         self.dump.show()
-        self.printPlayerOpenField()
-        self.printPlayerCloseField()
-
+        self.printPlayerOpenField(self.players[0])
+        self.printPlayerCloseField(self.players[0])
         print("-----------------------")
 
-
-    def printOponentCloseField(self):
+    def printPlayerCloseField(self,player):
         str = ""
-        closeField = self.player2.getCloseField()
+        closeField = player.getCloseField()
         for i in range(closeField.fieldLen()):
             str += "[*]"
         print(str)
 
-    def printOponentOpenField(self):
+    def printPlayerOpenField(self,player):
         str = ""
-        openField = self.player2.getOpenField()
+        openField = player.getOpenField()
         cards = openField.getCards()
         for i in range(openField.fieldLen()):
             str += "[" + cards[i].getChar() + "]"
         print(str)
-
-    def printPlayerOpenField(self):
-        str = ""
-        openField = self.player1.getOpenField()
-        cards = openField.getCards()
-        for i in range(openField.fieldLen()):
-            str += "[" + cards[i].getChar() + "]"
-        print(str)
-
-    def printPlayerCloseField(self):
-        str = ""
-        closeField = self.player1.getCloseField()
-        for i in range(closeField.fieldLen()):
-            str += "[*]"
-        print(str)
-
 
 class player:
     def __init__(self,hand,openField,closeField):
