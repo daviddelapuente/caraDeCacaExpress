@@ -290,9 +290,13 @@ class gameState():
 #this player will play a random cards from de subset of playable cards in the hand
 #this is the simplest randomPlayer, it only can play 1 card at time
 class randomPlayer(IAPlayer):
+    def __init__(self,hand,openField,closeField):
+        IAPlayer.__init__(self,hand,openField,closeField)
+        self.pForDraw=0.05
+
     def think(self,gs):
         p=random.random()
-        if p<0.05 and not gs.dump.isEmpty():
+        if p<self.pForDraw and not gs.dump.isEmpty():
             #decide que se las quiere llevar
             return "out"
         if isinstance(self.actualField,closeField):
@@ -303,3 +307,76 @@ class randomPlayer(IAPlayer):
                 return "out"
             else:
                 return str(validCards[random.randint(0,len(validCards)-1)])
+
+#this is another random player but it can play 1 or more of the same cards when it can
+#this player should be more competent than the other because it has more adaptability
+class randomPlayerV2(IAPlayer):
+    def __init__(self,hand,openField,closeField):
+        IAPlayer.__init__(self,hand,openField,closeField)
+        self.pForDraw=0.05
+        self.pForMoreThanOne=0.70
+
+    def getValidSets(self,cards,dumpster):
+        if dumpster.isEmpty():
+            validSets=[]
+            aux=[]
+            auxValue=cards[0].getValue()
+            for i in range(len(cards)):
+                if auxValue==cards[i].getValue():
+                    aux.append(i)
+                else:
+                    if len(aux)>0:
+                        validSets.append(aux)
+                    auxValue=cards[i].getValue()
+                    aux=[i]
+            if len(aux)>0:
+                validSets.append(aux)
+            return validSets
+        else:
+            validSets=[]
+            aux=[]
+            auxValue=cards[0].getValue()
+            top=dumpster.getTop().getValue()
+            for i in range(len(cards)):
+                if top>cards[i].getValue():
+                    auxValue=cards[i].getValue()
+                elif auxValue==cards[i].getValue():
+                    aux.append(i)
+                else:
+                    if len(aux)>0:
+                        validSets.append(aux)
+                    auxValue=cards[i].getValue()
+                    aux=[]
+                    aux.append(i)
+            if len(aux)>0:
+                validSets.append(aux)
+            return validSets
+
+    def think(self,gs):
+        p=random.random()
+        if p<self.pForDraw and not gs.dump.isEmpty():
+            #decide que se las quiere llevar
+            return "out"
+        elif isinstance(self.actualField,closeField):
+            return str(random.randint(0,len(self.closeField.getCards())-1))
+        else:
+            #this return an array of arrays of indexes
+            validSets=self.getValidSets(self.actualField.getCards(),gs.getDumpster())
+            if len(validSets)==0:
+                return "out"
+            else:
+                #first select some set
+                firstIndex=random.randint(0,len(validSets)-1)
+                if len(validSets[firstIndex])==1:
+                    #if the set only has one index, then return that
+                    return str(validSets[firstIndex][0])
+                else:
+                    #if the set has more than one posible index
+                    r1=0
+                    r2=0
+                    while(r2<(len(validSets[firstIndex])-1)):
+                        if random.random()>self.pForMoreThanOne:
+                            break
+                        else:
+                            r2+=1
+                    return str(validSets[firstIndex][r1])+"-"+str(validSets[firstIndex][r2])
