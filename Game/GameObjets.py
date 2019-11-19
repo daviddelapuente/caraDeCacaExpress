@@ -31,33 +31,29 @@ class field:
         if jugadas[0]=="draw":
             if dump.isEmpty():
                 return False
-            return True
-        if len(jugadas)==1:
-            if int(jugadas[0])>=self.fieldLen():
+        elif len(jugadas)==1:
+            jugada=int(jugadas[0])
+            if jugada>=self.fieldLen():
                 return False
             cards=self.getCards()
-            cardValue=cards[int(jugadas[0])].getValue()
-            if dump.isEmpty() or dump.getTop().getValue()<=cardValue:
-                return True
-            return False
+            cardValue=cards[jugada].getValue()
+            if not dump.isEmpty() and dump.getTop().getValue()>cardValue:
+                return False
         else:
-            if int(jugadas[0])>=self.fieldLen() or int(jugadas[1])>=self.fieldLen():
+            jugada1=int(jugadas[0])
+            jugada2=int(jugadas[1])
+            if jugada1>=self.fieldLen() or jugada2>=self.fieldLen():
                 return False
-
             cards=self.getCards()
-            cardValue=cards[int(jugadas[0])].getValue()
-            for i in range(int(jugadas[0]),int(jugadas[1])+1):
-                if cards[int(i)].getValue()!=cardValue:
+            cardValue=cards[jugada1].getValue()
+            for i in range(jugada1,jugada2+1):
+                if cards[i].getValue()!=cardValue:
                     return False
-            if dump.isEmpty() or dump.getTop().getValue()<=cardValue:
-                return True
-            return False
+            if not dump.isEmpty() and dump.getTop().getValue()>cardValue:
+                return False
         return True
 
 class openField(field):
-    def __init__(self,cards):
-        field.__init__(self,cards)
-
     def playCards(self,x,y=-1):
         cardsPlayed=[]
         if y==-1:
@@ -191,8 +187,6 @@ class deck:
         return cardsTupple
 
 
-
-
 class table:
     def __init__(self,deck,handLen,fieldsLen,player1,player2):
         self.deck=deck
@@ -214,14 +208,10 @@ class table:
         self.player2.addToOpenField(self.deck.drawX(self.fieldsLen))
         self.player2.addToCloseField(self.deck.drawX(self.fieldsLen))
 
-
-
     def show(self):
         self.player2.printHand()
         self.printTable()
         self.player1.printHand()
-
-
 
 
     def printTable(self):
@@ -233,9 +223,6 @@ class table:
         self.printPlayerCloseField()
 
         print("-----------------------")
-
-
-
 
 
     def printOponentCloseField(self):
@@ -267,9 +254,6 @@ class table:
         for i in range(closeField.fieldLen()):
             str += "[*]"
         print(str)
-
-
-
 
 
 class player:
@@ -345,11 +329,6 @@ class player:
         return self.openField
     def getCloseField(self):
         return self.closeField
-    
-    
-
-
-
 
 class IAPlayer(player):
     def __init__(self,hand,openField,closeField):
@@ -409,9 +388,6 @@ class randomPlayer(IAPlayer):
                 else:
                     p2=random.randint(0,len(validCards)-1)
                     return str(validCards[p2])
-
-
-
 
 class realPlayer(player):
     def __init__(self,hand,openField,closeField):
