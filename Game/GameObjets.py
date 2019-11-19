@@ -42,7 +42,7 @@ class field:
         else:
             jugada1=int(jugadas[0])
             jugada2=int(jugadas[1])
-            if jugada1>=self.fieldLen() or jugada2>=self.fieldLen():
+            if jugada1>=self.fieldLen() or jugada2>=self.fieldLen() or jugada1>jugada2:
                 return False
             cards=self.getCards()
             cardValue=cards[jugada1].getValue()
