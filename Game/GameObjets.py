@@ -53,38 +53,6 @@ class field:
                 return False
         return True
 
-class openField(field):
-    def playCards(self,x,y=-1):
-        cardsPlayed=[]
-        if y==-1:
-            cardsPlayed.append(self.cards.pop(x))
-            return cardsPlayed
-        else:
-            for i in range(y-x+1):
-                cardsPlayed.append(self.cards.pop(x))
-            return cardsPlayed
-
-
-class  closeField(field):
-    def __init__(self, cards):
-        field.__init__(self,cards)
-
-    def playCards(self, x):
-        cardsPlayed = []
-
-        cardsPlayed.append(self.cards.pop(x))
-        return cardsPlayed
-
-    def filterSemantic(self,jugadas,dump):
-        if jugadas[0]=="draw":
-            return True
-        elif len(jugadas)>1:
-            return False
-        elif int(jugadas[0])>=self.fieldLen():
-            return False
-        return True
-
-
 class hand(field):
     def __init__(self,cards):
         field.__init__(self,cards)
@@ -99,10 +67,30 @@ class hand(field):
                 cardsPlayed.append(self.cards.pop(x))
             return cardsPlayed
 
-class dumpster(field):
-    def __init__(self):
-        field.__init__(self,[])
+class openField(field):
+    def playCards(self,x,y=-1):
+        cardsPlayed=[]
+        if y==-1:
+            cardsPlayed.append(self.cards.pop(x))
+        else:
+            for i in range(y-x+1):
+                cardsPlayed.append(self.cards.pop(x))
+        return cardsPlayed
 
+class  closeField(field):
+    def playCards(self, x):
+        cardsPlayed = []
+        cardsPlayed.append(self.cards.pop(x))
+        return cardsPlayed
+
+    def filterSemantic(self,jugadas,dump):
+        if jugadas[0]=="draw":
+            return True
+        elif len(jugadas)>1 or int(jugadas[0])>=self.fieldLen():
+            return False
+        return True
+
+class dumpster(field):
     def burn(self):
         self.dump=[]
 
@@ -133,13 +121,10 @@ class dumpster(field):
     def isEmpty(self):
         if len(self.cards)==0:
             return True
-        else:
-            return False
+        return False
     
     def getTop(self):
         return self.cards[len(self.cards)-1]
-
-    
 
 class card:
     def __init__(self,char,value,virtual_value):
@@ -155,8 +140,6 @@ class card:
         return self.virtual_value
     def getTupple(self):
         return [self.char,self.value,self.virtual_value]
-
-
 
 class deck:
     def __init__(self,cards):
@@ -192,7 +175,7 @@ class table:
         self.deck=deck
         self.handLen=handLen
         self.fieldsLen=fieldsLen
-        self.dump=dumpster()
+        self.dump=dumpster([])
         self.player1=player1
         self.player2=player2
 
