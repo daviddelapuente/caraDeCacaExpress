@@ -323,7 +323,14 @@ class player:
         self.closeField.addCards(newCards)
 
 
-    def playFromHand(self,x,y=-1):
+    def playFromHand(self,jugadas):
+        if len(jugadas)==1:
+            x=int(jugadas[0])
+            y=-1
+        else:
+            x=int(jugadas[0])
+            y=int(jugadas[1])
+
         cards=self.hand.playCards(x,y)
         if self.hand.fieldLen()==0:
             if self.openField.fieldLen()>0:
@@ -332,13 +339,20 @@ class player:
                 self.actualField=self.closeField
         return cards
 
-    def playFromOpenField(self,x,y=-1):
+    def playFromOpenField(self,jugadas):
+        if len(jugadas)==1:
+            x=int(jugadas[0])
+            y=-1
+        else:
+            x=int(jugadas[0])
+            y=int(jugadas[1])
         cards=self.openField.playCards(x,y)
         if self.openField.fieldLen()==0:
             self.actualField=self.closeField
         return cards
 
-    def playFromCloseField(self,x):
+    def playFromCloseField(self,jugadas):
+        x=int(jugadas[0])
         return self.closeField.playCards(x)
 
     def getHand(self):
@@ -390,7 +404,7 @@ class randomPlayer(IAPlayer):
         player.__init__(self,hand,openField,closeField)
 
     def think(self,gs):
-        validCards=self.getValidCards(self.hand.getCards(),gs.getDumpster())
+        validCards=self.getValidCards(self.actualField.getCards(),gs.getDumpster())
         if len(validCards)==0:
             return "out"
         else:
@@ -401,29 +415,6 @@ class randomPlayer(IAPlayer):
             else:
                 p2=random.randint(0,len(validCards)-1)
                 return str(validCards[p2])
-    
-    def thinkOpenField(self,gs):
-        validCards=self.getValidCards(self.openField.getCards(),gs.getDumpster())
-        if len(validCards)==0:
-            return "out"
-        else:
-            p=random.random()
-            if p<0.05:
-                #decide que se las quiere llevar
-                return "out"
-            else:
-                p2=random.randint(0,len(validCards)-1)
-                return str(validCards[p2])
-
-    def thinkCloseField(self,gs):
-        p=random.random()
-        if p<0.05:
-            #decide que se las quiere llevar
-            return "out"
-        else:
-            #esto podria ser mas inteligente y elegir uno al azar, aunque azar sobre azar es azar no lo se
-            p2=random.randint(0,len(self.closeField.getCards())-1)
-            return str(p2)
 
 
 

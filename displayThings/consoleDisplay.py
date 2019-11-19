@@ -1,7 +1,4 @@
 import os
-def clearscreen2():
-    pass
-
 def clearscreen(numlines=100):
   """Clear the console.
 numlines is an optional argument used only as a fall-back.
