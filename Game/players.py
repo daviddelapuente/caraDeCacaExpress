@@ -3,6 +3,8 @@ from Game.arboles import *
 from Game.astD import *
 from math import ceil
 from math import exp
+from math import floor
+from math import cos
 
 class player:
     def __init__(self,hand,openField,closeField):
@@ -18,6 +20,11 @@ class player:
         return self.openField
     def getCloseField(self):
         return self.closeField
+
+    def setFields(self,fields):
+        self.hand=fields[0]
+        self.openField=fields[1]
+        self.closeField=fields[2]
     
     #adders(this add cards to a field and change the actualField)
     def addTohand(self,newCards):
@@ -109,6 +116,10 @@ class IAPlayer(player):
             str+="[*]"
         print(str)
 
+def crossOverPlayers(player1,player2):
+    gp=gPlayer(hand([]),openField([]),closeField([]),player1.getA(),player1.getDepth())
+    gp.setGenoma(player1.getGenoma(),player2.getGenoma())
+    return gp
 
 class genoma():
     def __init__(self,a,depth):
@@ -117,6 +128,20 @@ class genoma():
         self.arbol1=a.__call__(depth)
         self.arbol2=a.__call__(depth)
         self.arbol3=a.__call__(depth)
+
+    def getArbol1(self):
+        return self.arbol1
+    def getArbol2(self):
+        return self.arbol2
+    def getArbol3(self):
+        return self.arbol3
+    
+    def setArbol1(self,newArbol1):
+        self.arbol1=newArbol1
+    def setArbol2(self,newArbol2):
+        self.arbol2=newArbol2
+    def setArbol3(self,newArbol3):
+        self.arbol3=newArbol3
     
     def mutate(self):
         h=self.arbol1.serialize()
@@ -146,7 +171,7 @@ class genoma():
 
     
     def sig(self,x):
-        return 1/(1+exp(-1*x))
+        return cos(x)
     
     def g(self,validCards):
         return (self.g1(validCards[0])+self.g2(validCards[floor(len(validCards)/2)])+self.g3(validCards[len(validCards)-1]))/3
@@ -174,9 +199,56 @@ class gPlayer(IAPlayer):
 
     def mutate(self):
         self.genoma.mutate()
+    def getGenoma(self):
+        return self.genoma
+    def getA(self):
+        return self.a
+    def getDepth(self):
+        return self.depth
 
-    def procreateWith(self,player2):
-        pass
+    def setGenoma(self,genoma1,genoma2):
+        if random.random()>=0:
+            tree1Copy=genoma1.getArbol1().copy()
+
+            h1=tree1Copy.serialize()
+
+            h2=genoma2.getArbol1().serialize()
+
+            i=random.randint(0,len(h1)-1)
+
+            j=random.randint(0,len(h2)-1)
+
+            h1[i].replace(h2[j])
+
+            self.genoma.setArbol1(tree1Copy)
+
+            tree2Copy=genoma1.getArbol2().copy()
+
+            h1=tree2Copy.serialize()
+
+            h2=genoma2.getArbol2().serialize()
+
+            i=random.randint(0,len(h1)-1)
+
+            j=random.randint(0,len(h2)-1)
+
+            h1[i].replace(h2[j])
+
+            self.genoma.setArbol2(tree2Copy)
+
+            tree3Copy=genoma1.getArbol3().copy()
+
+            h1=tree3Copy.serialize()
+
+            h2=genoma2.getArbol3().serialize()
+
+            i=random.randint(0,len(h1)-1)
+
+            j=random.randint(0,len(h2)-1)
+
+            h1[i].replace(h2[j])
+
+            self.genoma.setArbol3(tree1Copy)
 
     def think(self,gs):
         p=random.random()

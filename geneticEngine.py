@@ -1,4 +1,5 @@
 from Game.GameObjets import *
+from game import *
 #return a population of players with a random genoma
 def initPopulation(populationLen,a,d):
     population=[]
@@ -28,22 +29,20 @@ def fitnessesI(population,competitors,fit):
 def mutatePlayer(player):
     player.mutate()
 
-def crossOverPlayers(player1,player2):
-    return player1.procreateWith(player2)
-
 #fitness function, this function return the amount of times that a player wins to a random player
 def fit(player):
-    rp=randomPlayer(hand([]),openField([]),closeField([]))
+    rp=goodDeterministicPlayer(hand([]),openField([]),closeField([]))
     wins=0
-    for i in range(100):
+    rplayers=20
+    for i in range(rplayers):
+        rp.setFields([hand([]),openField([]),closeField([])])
+        player.setFields([hand([]),openField([]),closeField([])])
         deck0=deck([card('2',2,2),card('2',2,2),card('2',2,2),card('2',2,2),card('3',3,3),card('3',3,3),card('7',7,7),card('7',7,7),card('7',7,7),card('7',7,7),card('10',10,10),card('10',10,10),card('10',10,10),card('10',10,10),card('11',11,11),card('11',11,11),card('11',11,11),card('11',11,11),card('13',13,13),card('13',13,13),card('13',13,13),card('13',13,13),card('14',14,14),card('14',14,14)])
         gameIAvIA0=gameIAvIA([player,rp],deck0,4,4)
         winner=gameIAvIA0.play()
         if winner==0:
             wins+=1
-    return wins
-        
-
+    return 100*(wins/rplayers)
 
 #Version one of a genetic algorithm that will tray to find a competent careKK player.
 #competent player is someone thah has a winrate>50% over a population of random players
@@ -96,7 +95,8 @@ def findPlayer(trys,populationLen,Ncompetitors,F,T,depth,fitnessFunction):
                     winner2 = competitors[i]
             
 
-            son = mutatePlayer(crossOverPlayers(population[winner1], population[winner2]),a,depth)
+            son = crossOverPlayers(population[winner1], population[winner2])
+            son.mutate()
             newPopulation.append(son)
 
         population=newPopulation
@@ -104,14 +104,14 @@ def findPlayer(trys,populationLen,Ncompetitors,F,T,depth,fitnessFunction):
         maxfit=-1
         best=0
 
-        F=fitnesses(population,arbolReal,intervalo,fitnessFunction)
+        F=fitnessesI(population,range(len(population)),fit)
 
         for i in range(len(F)):
             if F[i]>maxfit:
                 maxfit=F[i]
                 best=i
 
-            if maxfit==0:
+            if maxfit==100:
                
                 print("jugador competente encontrado!")
                 print("en iteracion "+str(t))
@@ -122,3 +122,34 @@ def findPlayer(trys,populationLen,Ncompetitors,F,T,depth,fitnessFunction):
             break
 
     print("bets winnRate = "+str(F[best])+"%")
+
+
+trys=3
+populationLen=15
+depth=5
+F=[AddNode,SubNode,MultNode]
+T=list(range(-10,10))
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+T.append("x")
+Ncompetitors=4
+
+findPlayer(trys,populationLen,Ncompetitors,F,T,depth,fit)
+
