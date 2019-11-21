@@ -1,4 +1,9 @@
 from Game.fields import *
+from Game.arboles import *
+from Game.astD import *
+from math import ceil
+from math import exp
+
 class player:
     def __init__(self,hand,openField,closeField):
         self.hand=hand
@@ -72,6 +77,30 @@ class player:
             str+="["+ cards[i].getChar() +"]"
         print(str)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class IAPlayer(player):
     def printHand(self):
         str=""
@@ -79,6 +108,51 @@ class IAPlayer(player):
         for i in range(hand.fieldLen()):
             str+="[*]"
         print(str)
+
+
+class genoma():
+    def __init__(self,a,depth):
+        self.a=a
+        self.depth=depth
+        self.arbol1=a.__call__(depth)
+        self.arbol2=a.__call__(depth)
+        self.arbol3=a.__call__(depth)
+    
+    def mutate(self):
+        h=self.arbol1.serialize()
+        i=random.randint(0,len(h)-1)
+        h[i].replace(self.a.__call__(max(1,self.depth/3)))
+
+        h2=self.arbol2.serialize()
+        i2=random.randint(0,len(h2)-1)
+        h2[i2].replace(self.a.__call__(max(1,self.depth/3)))
+
+        h3=self.arbol3.serialize()
+        i3=random.randint(0,len(h3)-1)
+        h3[i3].replace(self.a.__call__(max(1,self.depth/3)))
+    
+
+    def g1(self,x):
+        d={"x":x}
+        return self.arbol1.eval(d)
+    
+    def g2(self,x):
+        d={"x":x}
+        return self.arbol2.eval(d)
+
+    def g3(self,x):
+        d={"x":x}
+        return self.arbol3.eval(d)
+
+    
+    def sig(self,x):
+        return 1/(1+exp(-1*x))
+    
+    def g(self,validCards):
+        return (self.g1(validCards[0])+self.g2(validCards[floor(len(validCards)/2)])+self.g3(validCards[len(validCards)-1]))/3
+
+    def evaluate(self,validCards):
+        return self.sig(self.g(validCards))
 
 #now this isnt a big class, but in the future I plan to make this bigger so ia can have more context to take desicions
 class gameState():
@@ -89,12 +163,52 @@ class gameState():
     def setDumpster(self,newDump):
         self.dump=newDump
 
+
+class gPlayer(IAPlayer):
+    def __init__(self,hand,openField,closeField,a,depth):
+        self.a=a
+        self.depth=depth
+        self.genoma=genoma(self.a,self.depth)
+        self.pForDraw=0.05
+        player.__init__(self,hand,openField,closeField)
+
+    def mutate(self):
+        self.genoma.mutate()
+
+    def procreateWith(self,player2):
+        pass
+
+    def think(self,gs):
+        p=random.random()
+        if p<self.pForDraw and not gs.dump.isEmpty():
+            return "out"
+        if isinstance(self.actualField,closeField):
+            return str(random.randint(0,len(self.closeField.getCards())-1))
+        else:
+            validCards=self.getValidCards(self.actualField.getCards(),gs.getDumpster())
+            if len(validCards)==0:
+                return "out"
+            else:
+                #here is when the genoma take place
+                
+                #this is a number in (0,1)
+                r=self.genoma.evaluate(validCards)
+                index= ceil(r*(len(validCards)-1))
+                return str(validCards[index])
+
+    def printHand(self):
+        str=""
+        hand = self.getHand()
+        for i in range(hand.fieldLen()):
+            str+="[*]"
+        print(str)
+
 #this player will play a random cards from de subset of playable cards in the hand
 #this is the simplest randomPlayer, it only can play 1 card at time
 class randomPlayer(IAPlayer):
     def __init__(self,hand,openField,closeField):
         IAPlayer.__init__(self,hand,openField,closeField)
-        self.pForDraw=0
+        self.pForDraw=0.05
 
     def think(self,gs):
         p=random.random()
